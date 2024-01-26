@@ -18,7 +18,7 @@ const salt = bcrypt.genSaltSync(10);
 const secret = "ggderrryh"
 
 const corsOptions = {
-    origin: ['https://mern-blog-client-azure.vercel.app'], 
+    origin: ['https://mern-blog-client-3b7k9mlc8-the-shaelles-projects.vercel.app'], 
    methods: ["POST", "GET"],
    credentials: true// some legacy browsers (IE11, various SmartTVs) choke on 204
   };
@@ -104,7 +104,9 @@ res.json(postDoc);
   .limit(20)
   );
  })
- 
-    app.listen(4000);
 
+ const port = 4000;
+ app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
 module.exports = app;
