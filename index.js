@@ -7,9 +7,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 const uploadMiddleware = multer({dest: 'uploads/'});
 const fs = require('fs');
@@ -21,7 +18,7 @@ const salt = bcrypt.genSaltSync(10);
 const secret = "ggderrryh"
 
 const corsOptions = {
-    origin: ['https://mern-blog-client-azure.vercel.app/'], 
+    origin: ['https://mern-blog-client-azure.vercel.app'], 
    methods: ["POST", "GET"],
    Credential: true// some legacy browsers (IE11, various SmartTVs) choke on 204
   };
