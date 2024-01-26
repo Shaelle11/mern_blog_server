@@ -21,8 +21,9 @@ const salt = bcrypt.genSaltSync(10);
 const secret = "ggderrryh"
 
 const corsOptions = {
-    origin: 'https://mern-blog-client-azure.vercel.app/',
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    origin: ['https://mern-blog-client-azure.vercel.app/'], 
+   methods: ["POST", "GET"],
+   Credential: true// some legacy browsers (IE11, various SmartTVs) choke on 204
   };
   
   app.use(cors(corsOptions));
@@ -31,7 +32,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
-mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://my_blog:48GWvQYHbT0ETxYL@cluster0.g8ila1e.mongodb.net/test?retryWrites=true&w=majority');
 
 app.post('/register', async (req, res) => {
  const {username, email, password} = req.body;
