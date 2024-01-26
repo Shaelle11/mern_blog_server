@@ -20,7 +20,7 @@ const secret = "ggderrryh"
 const corsOptions = {
     origin: ['https://mern-blog-client-azure.vercel.app'], 
    methods: ["POST", "GET"],
-   Credential: true// some legacy browsers (IE11, various SmartTVs) choke on 204
+   credentials: true// some legacy browsers (IE11, various SmartTVs) choke on 204
   };
   
   app.use(cors(corsOptions));
