@@ -104,9 +104,7 @@ res.json(postDoc);
   .limit(20)
   );
  })
- const port = process.env.API_PORT || 4000;
-if(port){
-    app.listen(port);
-}
+ 
+    app.listen(4000);
 
 module.exports = app;
