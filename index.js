@@ -20,10 +20,16 @@ const app = express();
 const salt = bcrypt.genSaltSync(10);
 const secret = "ggderrryh"
 
-app.use(cors({credentials:true, origin:"https://mern-blog-client-azure.vercel.app/"}));
+const corsOptions = {
+    origin: 'https://mern-blog-client-azure.vercel.app/',
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
+  
+  app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser()); 
 app.use('/uploads', express.static(__dirname + '/uploads'));
+
 
 mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -100,8 +106,9 @@ res.json(postDoc);
   .limit(20)
   );
  })
-if(process.env.API_PORT){
-    app.listen(process.env.API_PORT);
+ const port = process.env.API_PORT || 4000;
+if(port){
+    app.listen(port);
 }
 
 module.exports = app;
