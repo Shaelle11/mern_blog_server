@@ -17,9 +17,15 @@ const app = express();
 const salt = bcrypt.genSaltSync(10);
 const secret = "ggderrryh"
 
+const allowedOrigins = [
+    
+        'https://mern-blog-client-3b7k9mlc8-the-shaelles-projects.vercel.app',
+        'http://localhost:3000'
+       
+]
 const corsOptions = {
-    origin: ['https://mern-blog-client-3b7k9mlc8-the-shaelles-projects.vercel.app'], 
-   methods: ["POST", "GET"],
+    origin: allowedOrigins, 
+   methods: ["POST", "GET", "PUT", "DELETE"],
    credentials: true// some legacy browsers (IE11, various SmartTVs) choke on 204
   };
   
@@ -83,6 +89,7 @@ res.cookie('token', '').json('ok');
 const {token} = req.cookies;
     jwt.verify(token, secret, {}, async (err, info) => {
         if(err) throw err;
+        
 const{title, summary, content} = req.body;
 const postDoc = await Post.create({
 title, 
