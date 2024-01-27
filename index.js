@@ -4,34 +4,40 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Post = require('./models/post');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
 
-const uploadMiddleware = multer({dest: 'uploads/'});
+const uploadMiddleware = multer({ dest: 'uploads/' });
 const fs = require('fs');
 const { Module } = require('module');
 const app = express();
 
-
 const salt = bcrypt.genSaltSync(10);
-const secret = "ggderrryh"
+const secret = "ggderrryh";
 
 const allowedOrigins = [
-    
-        'https://mern-blog-client-3b7k9mlc8-the-shaelles-projects.vercel.app',
-        'http://localhost:3000'
-       
-]
+  'https://mern-blog-client-azure.vercel.app',
+  'http://localhost:3000'
+];
+
 const corsOptions = {
-    origin: allowedOrigins, 
-   methods: ["POST", "GET", "PUT", "DELETE"],
-   credentials: true// some legacy browsers (IE11, various SmartTVs) choke on 204
-  };
-  
-  app.use(cors(corsOptions));
+  origin: allowedOrigins,
+  methods: ["POST", "GET", "PUT", "DELETE"],
+  credentials: true // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
+
+// Explicitly set the Access-Control-Allow-Origin header
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', allowedOrigins.join(','));
+  // ... other headers
+  next();
+});
+
 app.use(express.json());
-app.use(cookieParser()); 
+app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
@@ -89,7 +95,7 @@ res.cookie('token', '').json('ok');
 const {token} = req.cookies;
     jwt.verify(token, secret, {}, async (err, info) => {
         if(err) throw err;
-        
+
 const{title, summary, content} = req.body;
 const postDoc = await Post.create({
 title, 
