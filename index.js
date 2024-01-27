@@ -32,8 +32,6 @@ app.use(cors(corsOptions));
 // Explicitly set the Access-Control-Allow-Origin header
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', allowedOrigins);
-  // ... other headers
-  next();
 });
 
 app.use(express.json());
