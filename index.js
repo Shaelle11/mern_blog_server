@@ -98,8 +98,6 @@ author:info.id,
 });  
 res.json(postDoc);
  });
-
-
 });
 
  app.get('/post', async (req,res) => {
@@ -108,10 +106,17 @@ res.json(postDoc);
   .sort({createdAt: -1})
   .limit(20)
   );
- })
+ });
+
+ app.get('/post/:id', async (req, res) => {
+    const {id} = req.params;
+ const postDoc = await Post.findById(id).populate('author', ['username']);
+ res.json(postDoc);
+ });
+
 
  const port = 4000;
  app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-  });
+  });    
 module.exports = app;
