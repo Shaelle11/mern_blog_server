@@ -16,9 +16,8 @@ const app = express();
 
 const salt = bcrypt.genSaltSync(10);
 const secret = "ggderrryh"
-const allowedOrigins = [
-    
-        'https://mern-blog-client-3b7k9mlc8-the-shaelles-projects.vercel.app',
+const allowedOrigins = [ 
+        'https://mern-blog-client-3hixtvrc7-the-shaelles-projects.vercel.app',
         'http://localhost:3000'
        
 ]
