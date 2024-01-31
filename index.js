@@ -81,7 +81,7 @@ res.cookie('token', '').json('ok');
     const {originalname, path} = req.file;
    const parts = originalname.split('.');
     const ext = parts[parts.length-1];
-    const newPath = path+ '.'+ext;
+    const newPath = path+'.'+ext;
     fs.renameSync(path, newPath);
 
 
