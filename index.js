@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 
-mongoose.connect('mongodb+srv://my_blog:48GWvQYHbT0ETxYL@cluster0.g8ila1e.mongodb.net/test?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://my_blog:48GWvQYHbT0ETxYL@cluster0.g8ila1e.mongodb.net/test?retryWrites=true&w=majority&maxPoolSize=40');
 
 app.post('/register', async (req, res) => {
  const {username, email, password} = req.body;
@@ -91,7 +91,7 @@ const {token} = req.cookies;
 const{title, summary, content} = req.body;
 const postDoc = await Post.create({
 title, 
-summary, 
+summary,
 content,
 cover: newPath,
 author:info.id, 
