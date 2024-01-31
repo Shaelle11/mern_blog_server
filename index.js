@@ -4,35 +4,33 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const Post = require('./models/post');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
+const blob = require('@vercel/blob');
+const { put } = blob;
 
-const uploadMiddleware = multer({dest: 'uploads/'});
+const uploadMiddleware = multer({ dest: 'uploads/' });
 const fs = require('fs');
-const { Module } = require('module');
 const app = express();
 
-
 const salt = bcrypt.genSaltSync(10);
-const secret = "ggderrryh"
-const allowedOrigins = [ 
-        'https://mern-blog-client-3hixtvrc7-the-shaelles-projects.vercel.app',
-        'https://mern-blog-client-azure.vercel.app',
-        'http://localhost:3000'
-       
-]
+const secret = "ggderrryh";
+const allowedOrigins = [
+  'https://mern-blog-client-3hixtvrc7-the-shaelles-projects.vercel.app',
+  'https://mern-blog-client-azure.vercel.app',
+  'http://localhost:3000'
+];
 const corsOptions = {
-    origin: allowedOrigins, 
-   methods: ["POST", "GET", "PUT", "DELETE"],
-   credentials: true// some legacy browsers (IE11, various SmartTVs) choke on 204
-  };
-       
-  app.use(cors(corsOptions));
-app.use(express.json());
-app.use(cookieParser()); 
-app.use('/uploads', express.static(__dirname + '/uploads'));
+  origin: allowedOrigins,
+  methods: ["POST", "GET", "PUT", "DELETE"],
+  credentials: true
+};
 
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
+app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect('mongodb+srv://my_blog:48GWvQYHbT0ETxYL@cluster0.g8ila1e.mongodb.net/test?retryWrites=true&w=majority');
 
@@ -77,28 +75,41 @@ res.cookie('token', '').json('ok');
  })
 
 
- app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
-    const {originalname,path} = req.file;
-   const parts = originalname.split('.');
-    const ext = parts[parts.length-1];
-    const newPath = path+'.'+ext;
-    fs.renameSync(path, newPath);
-
-
-const {token} = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-        if(err) throw err;
-const{title, summary, content} = req.body;
-const postDoc = await Post.create({
-title, 
-summary,
-content,
-cover: newPath,
-author:info.id, 
-});  
-res.json(postDoc);
- });
-});
+ app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
+    try {
+      const { originalname, path } = req.file;
+      const parts = originalname.split('.');
+      const ext = parts[parts.length - 1];
+      const newPath = path + '.' + ext;
+      fs.renameSync(path, newPath);
+  
+      const { token } = req.cookies;
+      jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) throw err;
+  
+        const { title, summary, content } = req.body;
+  
+        // Store the file using @vercel/blob
+        const fileBuffer = fs.readFileSync(newPath);
+        const blobResponse = await put(fileBuffer, { contentType: `image/${ext}` });
+  
+        // Remove the local file after storing in blob
+        fs.unlinkSync(newPath);
+  
+        const postDoc = await Post.create({
+          title,
+          summary,
+          content,
+          cover: blobResponse.url,
+          author: info.id,
+        });
+  
+        res.json(postDoc);
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 
  app.get('/post', async (req,res) => {
   res.json(await Post.find()
