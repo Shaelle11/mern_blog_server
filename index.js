@@ -73,14 +73,13 @@ app.post('/logout', (req, res) => {
 });
 
 
-app.post('/post', multer({ dest: 'uploads/' }).single('file'), async (req, res) => {
+app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
   try {
     const { originalname, path } = req.file;
     const parts = originalname.split('.');
     const ext = parts[parts.length - 1];
     const newPath = path + '.' + ext;
-
-    await fs.rename(path, newPath);
+    fs.renameSync(path, newPath);
 
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, async (err, info) => {
@@ -89,27 +88,27 @@ app.post('/post', multer({ dest: 'uploads/' }).single('file'), async (req, res) 
       const { title, summary, content } = req.body;
 
       // Store the file using @vercel/blob
-      const fileBuffer = await fs.readFile(newPath);
+      const fileBuffer = fs.readFileSync(newPath);
       const blobResponse = await put(fileBuffer, { contentType: `image/${ext}` });
 
       // Remove the local file after storing in blob
-      await fs.unlink(newPath);
+      fs.unlinkSync(newPath);
 
       const postDoc = await Post.create({
         title,
         summary,
         content,
-        cover: { url: blobResponse.url }, // Set the cover property with the blob URL
+        cover: blobResponse.url,
         author: info.id,
       });
 
       res.json(postDoc);
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 app.get('/post', async (req, res) => {
